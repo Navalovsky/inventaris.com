@@ -1,0 +1,101 @@
+// Prisma schema - MySQL (compatible with phpMyAdmin / cPanel / PlanetScale / Railway / Aiven, dsb)
+// Vercel tidak menyediakan hosting MySQL, jadi gunakan provider MySQL eksternal
+// (contoh: Railway, Aiven, Hostinger, atau db biasa yang bisa dibuka lewat phpMyAdmin)
+// lalu masukkan connection string-nya ke DATABASE_URL di Vercel Environment Variables.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  KARYAWAN
+  ADMIN
+}
+
+enum StockInStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(KARYAWAN)
+  createdAt DateTime @default(now())
+
+  stockIns  StockIn[]  @relation("StockInUser")
+  verified  StockIn[]  @relation("StockInVerifier")
+  stockOuts StockOut[] @relation("StockOutUser")
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  icon  String @default("Package")
+
+  items Item[]
+}
+
+model Item {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  name       String
+  unit       String   @default("pcs")
+  stock      Int      @default(0)
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+  createdAt  DateTime @default(now())
+
+  stockIns  StockIn[]
+  stockOuts StockOut[]
+
+  @@index([categoryId])
+}
+
+model StockIn {
+  id         String        @id @default(cuid())
+  itemId     String
+  item       Item          @relation(fields: [itemId], references: [id])
+  qty        Int
+  totalPrice Int
+  status     StockInStatus @default(PENDING)
+
+  userId String
+  user   User   @relation("StockInUser", fields: [userId], references: [id])
+
+  verifierId String?
+  verifier   User?   @relation("StockInVerifier", fields: [verifierId], references: [id])
+  verifiedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([itemId])
+  @@index([userId])
+}
+
+model StockOut {
+  id          String @id @default(cuid())
+  itemId      String
+  item        Item   @relation(fields: [itemId], references: [id])
+  qty         Int
+  destination String
+
+  userId String
+  user   User   @relation("StockOutUser", fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([itemId])
+  @@index([userId])
+}

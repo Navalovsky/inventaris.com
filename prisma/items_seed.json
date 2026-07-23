@@ -1,0 +1,562 @@
+{
+  "atk": [
+    {
+      "code": "ATK111",
+      "name": "ACCO PLASTIK"
+    },
+    {
+      "code": "ATK112",
+      "name": "AMPLOP COKLAT BESAR 24 x35 (F4)"
+    },
+    {
+      "code": "ATK113",
+      "name": "AMPLOP COKLAT BESAR A3"
+    },
+    {
+      "code": "ATK114",
+      "name": "AMPLOP COKLAT KECIL"
+    },
+    {
+      "code": "ATK115",
+      "name": "AMPLOP LOGO SGF"
+    },
+    {
+      "code": "ATK116",
+      "name": "AMPLOP PUTIH ALAMAT"
+    },
+    {
+      "code": "ATK117",
+      "name": "AMPLOP PUTIH POLOS"
+    },
+    {
+      "code": "ATK118",
+      "name": "BALLPOINT"
+    },
+    {
+      "code": "ATK119",
+      "name": "BALLPOINT WARNA"
+    },
+    {
+      "code": "ATK120",
+      "name": "BANTALAN STEMPEL BESAR"
+    },
+    {
+      "code": "ATK121",
+      "name": "BANTALAN STEMPEL KECIL"
+    },
+    {
+      "code": "ATK122",
+      "name": "BATERAI ABC BESAR 1 5 Volt"
+    },
+    {
+      "code": "ATK123",
+      "name": "BATERAI ABC KECIL A2"
+    },
+    {
+      "code": "ATK124",
+      "name": "BATERAI ABC TANGGUNG"
+    },
+    {
+      "code": "ATK125",
+      "name": "BATERAI ALKALINE AA"
+    },
+    {
+      "code": "ATK126",
+      "name": "BATERAI ALKALINE AAA"
+    },
+    {
+      "code": "ATK127",
+      "name": "BATERAI KOTAK 9 VOLT"
+    },
+    {
+      "code": "ATK128",
+      "name": "BATERAI MAXEL CR2032"
+    },
+    {
+      "code": "ATK129",
+      "name": "BATERAI MAXEL LR 41"
+    },
+    {
+      "code": "ATK130",
+      "name": "BATERAI MAXEL LR 44"
+    },
+    {
+      "code": "ATK131",
+      "name": "BINDER CLIP NO. 107"
+    },
+    {
+      "code": "ATK132",
+      "name": "BINDER CLIP NO. 155"
+    },
+    {
+      "code": "ATK133",
+      "name": "BINDER CLIP NO. 200"
+    },
+    {
+      "code": "ATK134",
+      "name": "BINDER CLIP NO. 260"
+    },
+    {
+      "code": "ATK135",
+      "name": "BOX FILE PLASTIK"
+    },
+    {
+      "code": "ATK136",
+      "name": "BUKU TEBAL BESAR ISI 100"
+    },
+    {
+      "code": "ATK137",
+      "name": "BUKU TEBAL KECIL ISI 100"
+    },
+    {
+      "code": "ATK138",
+      "name": "BUKU TULIS KECIL TIPIS"
+    },
+    {
+      "code": "ATK139",
+      "name": "CLIP BOARD"
+    },
+    {
+      "code": "ATK140",
+      "name": "CLIP SEAGUL BESAR / NO.1"
+    },
+    {
+      "code": "ATK141",
+      "name": "CLIP SEAGUL KECIL / NO.3"
+    },
+    {
+      "code": "ATK142",
+      "name": "CORRECTION RE-TYPE"
+    },
+    {
+      "code": "ATK143",
+      "name": "CUTER"
+    },
+    {
+      "code": "ATK144",
+      "name": "DOUBLE TAPE KERTAS BESAR"
+    },
+    {
+      "code": "ATK145",
+      "name": "DOUBLE TAPE UK. SEDANG"
+    },
+    {
+      "code": "ATK146",
+      "name": "DOUBLE TAPE UK.KECIL"
+    },
+    {
+      "code": "ATK147",
+      "name": "GUNTING XL"
+    },
+    {
+      "code": "ATK148",
+      "name": "GUNTING KECIL"
+    },
+    {
+      "code": "ATK149",
+      "name": "ISI BOLLPOINT"
+    },
+    {
+      "code": "ATK150",
+      "name": "ISI CUTTER BESAR"
+    },
+    {
+      "code": "ATK151",
+      "name": "ISI CUTTER KECIL"
+    },
+    {
+      "code": "ATK152",
+      "name": "ISI STAPLER KECIL / no. 10"
+    },
+    {
+      "code": "ATK153",
+      "name": "ISI STAPLER SEDANG / no.3"
+    },
+    {
+      "code": "ATK154",
+      "name": "ISOLASI DOUBLEL TAPE KECIL"
+    },
+    {
+      "code": "ATK155",
+      "name": "ISOLASI GOLDTAPE 1/2INCH"
+    },
+    {
+      "code": "ATK156",
+      "name": "ISOLASI KECIL 1/2X10"
+    },
+    {
+      "code": "ATK157",
+      "name": "KALKULATOR CASIO"
+    },
+    {
+      "code": "ATK158",
+      "name": "KARET PENGHAPUS"
+    },
+    {
+      "code": "ATK159",
+      "name": "KERANJANG FILE"
+    },
+    {
+      "code": "ATK160",
+      "name": "KABEL HOBO"
+    },
+    {
+      "code": "ATK161",
+      "name": "KERTAS A-4 70 GRAM"
+    },
+    {
+      "code": "ATK162",
+      "name": "KERTAS AMANO SECURITY@10Roll"
+    },
+    {
+      "code": "ATK163",
+      "name": "KERTAS BUFALLO"
+    },
+    {
+      "code": "ATK164",
+      "name": "KERTAS F4/ HVS 70 GR"
+    },
+    {
+      "code": "ATK165",
+      "name": "KERTAS F4 WARNA 70 GR"
+    },
+    {
+      "code": "ATK166",
+      "name": "KERTAS FAX"
+    },
+    {
+      "code": "ATK167",
+      "name": "KERTAS PEMBUNGKUS MAKANAN"
+    },
+    {
+      "code": "ATK168",
+      "name": "KERTAS TELL STRUK BESAR"
+    },
+    {
+      "code": "ATK169",
+      "name": "KERTAS TELL STRUK KECIL"
+    },
+    {
+      "code": "ATK170",
+      "name": "LAKBAN DOUBLE TIP BESAR"
+    },
+    {
+      "code": "ATK171",
+      "name": "LAKBAN BESAR BENING"
+    },
+    {
+      "code": "ATK172",
+      "name": "LEM POVINAL"
+    },
+    {
+      "code": "ATK173",
+      "name": "MAP ACCO PLASTIK"
+    },
+    {
+      "code": "ATK174",
+      "name": "MAP CLEAR HOLDER"
+    },
+    {
+      "code": "ATK175",
+      "name": "MAP L PLASTIK TRANSPARAN"
+    },
+    {
+      "code": "ATK176",
+      "name": "MAP L PLASTIK BERWARNA"
+    },
+    {
+      "code": "ATK177",
+      "name": "MAP KANCING PLASTIK"
+    },
+    {
+      "code": "ATK178",
+      "name": "MAP GANTUNG"
+    },
+    {
+      "code": "ATK179",
+      "name": "MATERAI BESAR"
+    },
+    {
+      "code": "ATK180",
+      "name": "MATERAI KECIL"
+    },
+    {
+      "code": "ATK181",
+      "name": "ODNER BANTEX"
+    },
+    {
+      "code": "ATK182",
+      "name": "ODNER BESAR"
+    },
+    {
+      "code": "ATK183",
+      "name": "ODNER KECIL"
+    },
+    {
+      "code": "ATK184",
+      "name": "PENGGARIS BESI"
+    },
+    {
+      "code": "ATK185",
+      "name": "PENGGARIS MIKA"
+    },
+    {
+      "code": "ATK186",
+      "name": "Penghapus Papan"
+    },
+    {
+      "code": "ATK187",
+      "name": "PENSIL 2B"
+    },
+    {
+      "code": "ATK188",
+      "name": "PERFORATOR"
+    },
+    {
+      "code": "ATK189",
+      "name": "PITA MESIN CEKLOK AMANO"
+    },
+    {
+      "code": "ATK190",
+      "name": "PITA MESIN TIK"
+    },
+    {
+      "code": "ATK191",
+      "name": "PITA MESIN TIK DAITO"
+    },
+    {
+      "code": "ATK192",
+      "name": "PITA TELL STRUK"
+    },
+    {
+      "code": "ATK193",
+      "name": "PLASTIK LAMINATING@100Sheet"
+    },
+    {
+      "code": "ATK194",
+      "name": "PLONG KERTAS (KENKO NO.82 XL)"
+    },
+    {
+      "code": "ATK195",
+      "name": "POST IT"
+    },
+    {
+      "code": "ATK196",
+      "name": "POST IT SIGN"
+    },
+    {
+      "code": "ATK197",
+      "name": "PAKU PAYUNG PINES WARNA@30Pc"
+    },
+    {
+      "code": "ATK198",
+      "name": "RAK SUSUN 3"
+    },
+    {
+      "code": "ATK199",
+      "name": "RAUTAN PENSIL"
+    },
+    {
+      "code": "ATK200",
+      "name": "REMOVER"
+    },
+    {
+      "code": "ATK201",
+      "name": "SHEET PROTECTOR F4"
+    },
+    {
+      "code": "ATK202",
+      "name": "SHEET PROTECTOR A4"
+    },
+    {
+      "code": "ATK203",
+      "name": "SNOWMAN MARKING INK"
+    },
+    {
+      "code": "ATK204",
+      "name": "SNOWMAN PERMANENT INK"
+    },
+    {
+      "code": "ATK205",
+      "name": "SPIDOL BOARDMAKER HITAM"
+    },
+    {
+      "code": "ATK205A",
+      "name": "SPIDOL BOARDMAKER MERAH"
+    },
+    {
+      "code": "ATK206",
+      "name": "SPIDOL PERMANEN HITAM"
+    },
+    {
+      "code": "ATK207",
+      "name": "SPIDOL SNOWMAN KECIL COLOURS"
+    },
+    {
+      "code": "ATK208",
+      "name": "SPIDOL SNOWMAN PERMANEN (KECIL)"
+    },
+    {
+      "code": "ATK209",
+      "name": "STABILLO BOSS"
+    },
+    {
+      "code": "ATK210",
+      "name": "STAPLER MAX HD 10(KECIL)"
+    },
+    {
+      "code": "ATK211",
+      "name": "TANCAPAN KERTAS"
+    },
+    {
+      "code": "ATK212",
+      "name": "TINTA STAMPEL AIRLINE"
+    },
+    {
+      "code": "ATK213",
+      "name": "TINTA TRODAT"
+    },
+    {
+      "code": "ATK214",
+      "name": "TINTA TRODAT WARNA SKY BLUE"
+    },
+    {
+      "code": "ATK215",
+      "name": "TINTA TRODAT WARNA MERAH"
+    },
+    {
+      "code": "ATK216",
+      "name": "TISSU KOTAK PASEO / MULTI (900gr)"
+    },
+    {
+      "code": "ATK217",
+      "name": "TISUE PASEO REFFIL / NICE"
+    },
+    {
+      "code": "ATK218",
+      "name": "JAM DINDING"
+    }
+  ],
+  "elektronik": [
+    {
+      "code": "ATK219",
+      "name": "CATRIDGE EPSON STYLUS WARNA"
+    },
+    {
+      "code": "ATK220",
+      "name": "CATRIDGE HP 20- Black"
+    },
+    {
+      "code": "ATK221",
+      "name": "CATRIDGE HP 27- Black"
+    },
+    {
+      "code": "ATK222",
+      "name": "CATRIDGE HP 350 COLOUR"
+    },
+    {
+      "code": "ATK223",
+      "name": "CATRIDGE HP 49- Colour"
+    },
+    {
+      "code": "ATK224",
+      "name": "CATRIDGE HP 802- Colour"
+    },
+    {
+      "code": "ATK225",
+      "name": "CATRIDGE HP 802-BLACK"
+    },
+    {
+      "code": "ATK226",
+      "name": "CATRIDGE HP DJ 3320 BLACK"
+    },
+    {
+      "code": "ATK227",
+      "name": "CATRIDGE HP DJ 610 BLACK"
+    },
+    {
+      "code": "ATK228",
+      "name": "CATRIDGE HP TRI COLOUR"
+    },
+    {
+      "code": "ATK229",
+      "name": "CATRIDGE LASER JET"
+    },
+    {
+      "code": "ATK230",
+      "name": "CATRIDGE LQ 2180"
+    },
+    {
+      "code": "ATK231",
+      "name": "CATRIDGE LX-300+"
+    },
+    {
+      "code": "ATK232",
+      "name": "CATRIDGE PRINTER LEXMARK X2300"
+    },
+    {
+      "code": "ATK233",
+      "name": "DISK INSTALLER WINDOWS"
+    },
+    {
+      "code": "ATK234",
+      "name": "Inked Ribbon Catridge Two Colour"
+    },
+    {
+      "code": "ATK235",
+      "name": "MEMORY VGEN DDR2 1GB"
+    },
+    {
+      "code": "ATK236",
+      "name": "MOUSE"
+    },
+    {
+      "code": "ATK237",
+      "name": "TINTA REFILL EPSON L110(Warna Black)"
+    },
+    {
+      "code": "ATK238",
+      "name": "TINTA REFILL EPSON L110( Warna Cyan)"
+    },
+    {
+      "code": "ATK239",
+      "name": "TINTA REFIIL EPSON L110(Warna Yellow)"
+    },
+    {
+      "code": "ATK240",
+      "name": "TINTA REFIIL EPSON L110(Warna Magenta)"
+    },
+    {
+      "code": "ATK241",
+      "name": "PITA PRINTER BESAR LQ 2180/2190"
+    },
+    {
+      "code": "ATK242",
+      "name": "PITA PRINTER KECIL LX300"
+    },
+    {
+      "code": "ATK243",
+      "name": "RECYCLE TONER HP LASERJET"
+    },
+    {
+      "code": "ATK244",
+      "name": "REFILL TONER HP LASERJET"
+    },
+    {
+      "code": "ATK245",
+      "name": "SCANER"
+    },
+    {
+      "code": "ATK246",
+      "name": "UPS KOMPUTER"
+    },
+    {
+      "code": "ATK247",
+      "name": "PRINTER LASER"
+    },
+    {
+      "code": "ATK238B",
+      "name": "KEYBOARD"
+    }
+  ]
+}
