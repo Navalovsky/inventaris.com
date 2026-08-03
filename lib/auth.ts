@@ -6,9 +6,10 @@ import { prisma } from "@/lib/prisma";
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
-    // Sesi tetap tersimpan di cookie browser selama 30 hari,
-    // jadi ketika halaman di-refresh, user TIDAK perlu login ulang.
-    maxAge: 30 * 24 * 60 * 60,
+    // Sesi tetap tersimpan di cookie browser selama 7 hari,
+    // jadi ketika halaman di-refresh, user TIDAK perlu login ulang
+    // sampai 1 minggu, setelah itu wajib login lagi.
+    maxAge: 7 * 24 * 60 * 60,
   },
   pages: {
     signIn: "/login",

@@ -29,16 +29,34 @@ export async function POST(req: Request) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { itemId, qty, destination } = body;
+  const { itemId, qty, unit, plant, departemen } = body;
 
-  if (!itemId || !qty || qty <= 0 || !destination) {
+  if (!itemId || !qty || qty <= 0 || !unit || !plant || !departemen) {
     return NextResponse.json({ error: "Data tidak lengkap atau tidak valid" }, { status: 400 });
   }
 
   const item = await prisma.item.findUnique({ where: { id: itemId } });
   if (!item) return NextResponse.json({ error: "Barang tidak ditemukan" }, { status: 404 });
-  if (item.stock < Number(qty)) {
-    return NextResponse.json({ error: `Stok tidak mencukupi. Sisa stok: ${item.stock}` }, { status: 400 });
+
+  // Hitung stok tersedia khusus untuk kombinasi barang + satuan ini,
+  // berdasarkan riwayat transaksi input (terverifikasi) dan output.
+  const [inSum, outSum] = await Promise.all([
+    prisma.stockIn.aggregate({
+      where: { itemId, unit, status: "VERIFIED" },
+      _sum: { qty: true },
+    }),
+    prisma.stockOut.aggregate({
+      where: { itemId, unit },
+      _sum: { qty: true },
+    }),
+  ]);
+  const available = (inSum._sum.qty || 0) - (outSum._sum.qty || 0);
+
+  if (available < Number(qty)) {
+    return NextResponse.json(
+      { error: `Stok tidak mencukupi untuk satuan "${unit}". Sisa stok: ${available}` },
+      { status: 400 }
+    );
   }
 
   const stockOut = await prisma.$transaction(async (tx) => {
@@ -46,12 +64,15 @@ export async function POST(req: Request) {
       data: {
         itemId,
         qty: Number(qty),
-        destination,
+        unit,
+        plant,
+        departemen,
         userId: session.user.id,
       },
       include: { item: true },
     });
 
+    // Total stok kasar per barang (dipakai di halaman Dashboard) tetap diturunkan juga.
     await tx.item.update({
       where: { id: itemId },
       data: { stock: { decrement: Number(qty) } },

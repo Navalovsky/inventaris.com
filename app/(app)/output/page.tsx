@@ -5,32 +5,51 @@ import { Pencil, ArrowLeft } from "lucide-react";
 import { Pencil as PencilIcon, Cpu, Sparkles, Package } from "lucide-react";
 
 type Category = { id: string; name: string; slug: string; icon: string };
-type Item = { id: string; name: string; code: string; unit: string; stock: number };
+type StockRow = { itemId: string; itemName: string; itemCode: string; unit: string; available: number };
 type StockOut = {
   id: string;
   qty: number;
-  destination: string;
+  unit: string;
+  plant: string;
+  departemen: string;
   createdAt: string;
   item: { name: string; category: { name: string } };
 };
 
 const iconMap: Record<string, any> = { Pencil: PencilIcon, Cpu, Sparkles, Package };
-const destinations = ["Warehouse", "Accounting", "Security", "HRD", "Produksi", "Lainnya"];
+const plants = ["RTE", "RPA", "NUGGET"];
+const departemens = [
+  "PRODUCTION",
+  "MAINTENANCE",
+  "PROCUREMENT",
+  "LOGISTIC",
+  "QC",
+  "F&A",
+  "PGA",
+];
+const unitOptions = [
+  "pcs", "box", "pack", "rim", "roll", "lusin", "unit", "botol", "set",
+  "lembar", "buah", "pasang", "karton", "kg", "gram", "liter", "meter",
+  "galon", "sak", "tube", "kaleng",
+];
 
 export default function OutputPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCat, setSelectedCat] = useState<Category | null>(null);
-  const [items, setItems] = useState<Item[]>([]);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-  const [destination, setDestination] = useState("");
-  const [customDest, setCustomDest] = useState("");
+  const [stockRows, setStockRows] = useState<StockRow[]>([]);
+  const [selectedRow, setSelectedRow] = useState<StockRow | null>(null);
+  const [unit, setUnit] = useState("");
+  const [plant, setPlant] = useState("");
+  const [departemen, setDepartemen] = useState("");
   const [qty, setQty] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [list, setList] = useState<StockOut[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editQty, setEditQty] = useState("");
-  const [editDest, setEditDest] = useState("");
+  const [editUnit, setEditUnit] = useState("");
+  const [editPlant, setEditPlant] = useState("");
+  const [editDepartemen, setEditDepartemen] = useState("");
 
   useEffect(() => {
     fetch("/api/categories")
@@ -44,33 +63,47 @@ export default function OutputPage() {
     setList(await res.json());
   }, []);
 
+  // Kategori "Lainnya" (catch-all bawaan) disembunyikan, sama seperti di Dashboard.
+  const visibleCategories = categories.filter((c) => c.slug !== "lainnya");
+
   async function openCategory(cat: Category) {
     setSelectedCat(cat);
-    setSelectedItem(null);
+    setSelectedRow(null);
     setMessage("");
-    const res = await fetch(`/api/items?category=${cat.slug}`);
-    const data: Item[] = await res.json();
-    setItems(data.filter((i) => i.stock > 0));
+    const res = await fetch(`/api/output-stock?category=${cat.slug}`);
+    const data: StockRow[] = await res.json();
+    setStockRows(data);
   }
+
+  function selectRow(row: StockRow) {
+    setSelectedRow(row);
+    setUnit(row.unit);
+    setQty("");
+  }
+
+  // Ketika satuan diganti manual, cari sisa stok untuk kombinasi barang+satuan yang baru itu.
+  const availableForChosenUnit =
+    selectedRow &&
+    (stockRows.find((r) => r.itemId === selectedRow.itemId && r.unit === unit)?.available ?? 0);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setMessage("");
-    const finalDest = destination === "Lainnya" ? customDest.trim() : destination;
-    if (!selectedItem || !qty || !finalDest) return;
+    if (!selectedRow || !qty || !unit || !plant || !departemen) return;
     setSubmitting(true);
     const res = await fetch("/api/stock-out", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ itemId: selectedItem.id, qty: Number(qty), destination: finalDest }),
+      body: JSON.stringify({ itemId: selectedRow.itemId, qty: Number(qty), unit, plant, departemen }),
     });
     setSubmitting(false);
     if (res.ok) {
       setMessage("Output barang berhasil dicatat.");
-      setSelectedItem(null);
+      setSelectedRow(null);
       setQty("");
-      setDestination("");
-      setCustomDest("");
+      setUnit("");
+      setPlant("");
+      setDepartemen("");
       if (selectedCat) openCategory(selectedCat);
       loadHistory();
     } else {
@@ -82,14 +115,21 @@ export default function OutputPage() {
   function startEdit(row: StockOut) {
     setEditingId(row.id);
     setEditQty(String(row.qty));
-    setEditDest(row.destination);
+    setEditUnit(row.unit);
+    setEditPlant(row.plant);
+    setEditDepartemen(row.departemen);
   }
 
   async function saveEdit(id: string) {
     const res = await fetch(`/api/stock-out/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ qty: Number(editQty), destination: editDest }),
+      body: JSON.stringify({
+        qty: Number(editQty),
+        unit: editUnit,
+        plant: editPlant,
+        departemen: editDepartemen,
+      }),
     });
     if (res.ok) {
       setEditingId(null);
@@ -102,12 +142,13 @@ export default function OutputPage() {
     <div className="p-8 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 mb-1">Output Barang</h1>
       <p className="text-gray-500 text-sm mb-6">
-        Pilih kategori, lalu barang yang tersedia untuk dikeluarkan dan tujuannya.
+        Pilih kategori, lalu barang & satuan yang tersedia untuk dikeluarkan, plant, dan
+        departemen tujuan.
       </p>
 
       {!selectedCat ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {categories.map((cat) => {
+          {visibleCategories.map((cat) => {
             const Icon = iconMap[cat.icon] || Package;
             return (
               <button
@@ -136,20 +177,22 @@ export default function OutputPage() {
 
           <div className="grid sm:grid-cols-2 gap-6">
             <div className="bg-white rounded-xl border border-gray-200 max-h-96 overflow-y-auto">
-              {items.length === 0 ? (
+              {stockRows.length === 0 ? (
                 <p className="text-gray-400 text-sm p-4">Tidak ada barang dengan stok tersedia.</p>
               ) : (
-                items.map((item) => (
+                stockRows.map((row) => (
                   <button
-                    key={item.id}
-                    onClick={() => setSelectedItem(item)}
+                    key={`${row.itemId}-${row.unit}`}
+                    onClick={() => selectRow(row)}
                     className={`w-full text-left px-4 py-3 border-b border-gray-100 last:border-0 flex justify-between items-center hover:bg-gray-50 ${
-                      selectedItem?.id === item.id ? "bg-brand-50" : ""
+                      selectedRow?.itemId === row.itemId && selectedRow?.unit === row.unit
+                        ? "bg-brand-50"
+                        : ""
                     }`}
                   >
-                    <span className="text-sm text-gray-800">{item.name}</span>
+                    <span className="text-sm text-gray-800">{row.itemName}</span>
                     <span className="text-xs text-gray-400">
-                      Stok: {item.stock} {item.unit}
+                      Stok: {row.available} {row.unit}
                     </span>
                   </button>
                 ))
@@ -159,52 +202,77 @@ export default function OutputPage() {
             <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-5 space-y-4 h-fit">
               <p className="text-sm font-medium text-gray-700">
                 Barang dipilih:{" "}
-                <span className="text-brand-700">{selectedItem?.name || "-"}</span>
+                <span className="text-brand-700">{selectedRow?.itemName || "-"}</span>
               </p>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Jumlah
-                  {selectedItem && (
-                    <span className="text-gray-400 font-normal"> ({selectedItem.unit})</span>
-                  )}
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Satuan</label>
+                <select
+                  required
+                  value={unit}
+                  onChange={(e) => setUnit(e.target.value)}
+                  disabled={!selectedRow}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:bg-gray-50"
+                >
+                  <option value="">Pilih satuan</option>
+                  {unitOptions.map((u) => (
+                    <option key={u} value={u}>
+                      {u}
+                    </option>
+                  ))}
+                </select>
+                {selectedRow && unit && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    Sisa stok untuk satuan ini: {availableForChosenUnit ?? 0}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Jumlah</label>
                 <input
                   required
                   type="number"
                   min={1}
-                  max={selectedItem?.stock}
+                  max={availableForChosenUnit ?? undefined}
                   value={qty}
                   onChange={(e) => setQty(e.target.value)}
-                  disabled={!selectedItem}
+                  disabled={!selectedRow}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:bg-gray-50"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tujuan Output</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Plant</label>
                 <select
                   required
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  disabled={!selectedItem}
+                  value={plant}
+                  onChange={(e) => setPlant(e.target.value)}
+                  disabled={!selectedRow}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:bg-gray-50"
                 >
-                  <option value="">Pilih tujuan</option>
-                  {destinations.map((d) => (
+                  <option value="">Pilih plant</option>
+                  {plants.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
+                <select
+                  required
+                  value={departemen}
+                  onChange={(e) => setDepartemen(e.target.value)}
+                  disabled={!selectedRow}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:bg-gray-50"
+                >
+                  <option value="">Pilih departemen</option>
+                  {departemens.map((d) => (
                     <option key={d} value={d}>
                       {d}
                     </option>
                   ))}
                 </select>
               </div>
-              {destination === "Lainnya" && (
-                <input
-                  required
-                  placeholder="Tulis tujuan lain..."
-                  value={customDest}
-                  onChange={(e) => setCustomDest(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                />
-              )}
 
               {message && (
                 <p className="text-sm rounded-lg px-3 py-2 bg-brand-50 text-brand-700">{message}</p>
@@ -212,7 +280,7 @@ export default function OutputPage() {
 
               <button
                 type="submit"
-                disabled={!selectedItem || submitting}
+                disabled={!selectedRow || submitting}
                 className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg disabled:opacity-60"
               >
                 {submitting ? "Mengirim..." : "Catat Output Barang"}
@@ -229,7 +297,9 @@ export default function OutputPage() {
             <tr>
               <th className="px-4 py-3 font-medium">Barang</th>
               <th className="px-4 py-3 font-medium">Qty</th>
-              <th className="px-4 py-3 font-medium">Tujuan</th>
+              <th className="px-4 py-3 font-medium">Satuan</th>
+              <th className="px-4 py-3 font-medium">Plant</th>
+              <th className="px-4 py-3 font-medium">Departemen</th>
               <th className="px-4 py-3 font-medium"></th>
             </tr>
           </thead>
@@ -243,7 +313,7 @@ export default function OutputPage() {
                       type="number"
                       value={editQty}
                       onChange={(e) => setEditQty(e.target.value)}
-                      className="w-20 rounded border border-gray-300 px-2 py-1 text-sm"
+                      className="w-16 rounded border border-gray-300 px-2 py-1 text-sm"
                     />
                   ) : (
                     row.qty
@@ -251,13 +321,53 @@ export default function OutputPage() {
                 </td>
                 <td className="px-4 py-3">
                   {editingId === row.id ? (
-                    <input
-                      value={editDest}
-                      onChange={(e) => setEditDest(e.target.value)}
-                      className="w-32 rounded border border-gray-300 px-2 py-1 text-sm"
-                    />
+                    <select
+                      value={editUnit}
+                      onChange={(e) => setEditUnit(e.target.value)}
+                      className="rounded border border-gray-300 px-1 py-1 text-sm"
+                    >
+                      {unitOptions.map((u) => (
+                        <option key={u} value={u}>
+                          {u}
+                        </option>
+                      ))}
+                    </select>
                   ) : (
-                    row.destination
+                    row.unit
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  {editingId === row.id ? (
+                    <select
+                      value={editPlant}
+                      onChange={(e) => setEditPlant(e.target.value)}
+                      className="rounded border border-gray-300 px-2 py-1 text-sm"
+                    >
+                      {plants.map((p) => (
+                        <option key={p} value={p}>
+                          {p}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    row.plant
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  {editingId === row.id ? (
+                    <select
+                      value={editDepartemen}
+                      onChange={(e) => setEditDepartemen(e.target.value)}
+                      className="rounded border border-gray-300 px-2 py-1 text-sm"
+                    >
+                      {departemens.map((d) => (
+                        <option key={d} value={d}>
+                          {d}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    row.departemen
                   )}
                 </td>
                 <td className="px-4 py-3 text-right">
@@ -282,7 +392,7 @@ export default function OutputPage() {
             ))}
             {list.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-gray-400">
+                <td colSpan={6} className="px-4 py-6 text-center text-gray-400">
                   Belum ada data output.
                 </td>
               </tr>

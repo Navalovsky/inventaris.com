@@ -34,6 +34,8 @@ model User {
   stockIns  StockIn[]  @relation("StockInUser")
   verified  StockIn[]  @relation("StockInVerifier")
   stockOuts StockOut[] @relation("StockOutUser")
+  movements ItemMovement[] @relation("ItemMovementUser")
+  scanLogs  ScanLog[]  @relation("ScanLogUser")
 }
 
 model Category {
@@ -51,14 +53,43 @@ model Item {
   name       String
   unit       String   @default("pcs")
   stock      Int      @default(0)
+  location   String?
+  active     Boolean  @default(true)
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
   createdAt  DateTime @default(now())
 
   stockIns  StockIn[]
   stockOuts StockOut[]
+  movements ItemMovement[]
+  scanLogs  ScanLog[]
 
   @@index([categoryId])
+}
+
+model ItemMovement {
+  id           String   @id @default(cuid())
+  itemId       String
+  item         Item     @relation(fields: [itemId], references: [id])
+  fromLocation String?
+  toLocation   String
+  note         String?
+  userId       String
+  user         User     @relation("ItemMovementUser", fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@index([itemId])
+}
+
+model ScanLog {
+  id        String   @id @default(cuid())
+  itemId    String
+  item      Item     @relation(fields: [itemId], references: [id])
+  userId    String
+  user      User     @relation("ScanLogUser", fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([itemId])
 }
 
 model StockIn {
@@ -66,6 +97,7 @@ model StockIn {
   itemId     String
   item       Item          @relation(fields: [itemId], references: [id])
   qty        Int
+  unit       String        @default("pcs")
   totalPrice Int
   status     StockInStatus @default(PENDING)
 
@@ -84,11 +116,13 @@ model StockIn {
 }
 
 model StockOut {
-  id          String @id @default(cuid())
-  itemId      String
-  item        Item   @relation(fields: [itemId], references: [id])
-  qty         Int
-  destination String
+  id         String @id @default(cuid())
+  itemId     String
+  item       Item   @relation(fields: [itemId], references: [id])
+  qty        Int
+  unit       String @default("pcs")
+  plant      String
+  departemen String
 
   userId String
   user   User   @relation("StockOutUser", fields: [userId], references: [id])

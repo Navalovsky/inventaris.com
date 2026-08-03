@@ -57,11 +57,12 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     );
   }
 
-  const { qty, totalPrice, itemId } = body;
+  const { qty, unit, totalPrice, itemId } = body;
   const updated = await prisma.stockIn.update({
     where: { id: params.id },
     data: {
       ...(qty ? { qty: Number(qty) } : {}),
+      ...(unit ? { unit } : {}),
       ...(totalPrice != null ? { totalPrice: Number(totalPrice) } : {}),
       ...(itemId ? { itemId } : {}),
     },

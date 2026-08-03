@@ -2,14 +2,12 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, Search, Plus, X } from "lucide-react";
+import { ArrowLeft, Search, Plus, X, Trash2 } from "lucide-react";
 
 type Item = {
   id: string;
   code: string;
   name: string;
-  unit: string;
   stock: number;
   category: { name: string; slug: string; id: string };
 };
@@ -23,10 +21,10 @@ export default function CategoryItemsPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [newName, setNewName] = useState("");
   const [newCode, setNewCode] = useState("");
-  const [newUnit, setNewUnit] = useState("pcs");
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [categoryName, setCategoryName] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -62,15 +60,29 @@ export default function CategoryItemsPage() {
     const res = await fetch("/api/items", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newName, code: newCode, unit: newUnit, categoryId }),
+      body: JSON.stringify({ name: newName, code: newCode, categoryId }),
     });
     setSaving(false);
     if (res.ok) {
       setNewName("");
       setNewCode("");
-      setNewUnit("pcs");
       setShowAdd(false);
       load();
+    }
+  }
+
+  async function handleDeleteItem(item: Item) {
+    const confirmed = window.confirm(`Yakin ingin menghapus barang "${item.name}"?`);
+    if (!confirmed) return;
+
+    setDeletingId(item.id);
+    const res = await fetch(`/api/items/${item.id}`, { method: "DELETE" });
+    setDeletingId(null);
+    if (res.ok) {
+      load();
+    } else {
+      const err = await res.json();
+      alert(err.error || "Gagal menghapus barang.");
     }
   }
 
@@ -114,8 +126,8 @@ export default function CategoryItemsPage() {
               <tr>
                 <th className="px-4 py-3 font-medium">Kode</th>
                 <th className="px-4 py-3 font-medium">Nama Barang</th>
-                <th className="px-4 py-3 font-medium">Satuan</th>
                 <th className="px-4 py-3 font-medium text-right">Stok</th>
+                <th className="px-4 py-3 font-medium"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -123,7 +135,6 @@ export default function CategoryItemsPage() {
                 <tr key={item.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-gray-500">{item.code}</td>
                   <td className="px-4 py-3 text-gray-900">{item.name}</td>
-                  <td className="px-4 py-3 text-gray-500">{item.unit}</td>
                   <td className="px-4 py-3 text-right">
                     <span
                       className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -134,6 +145,16 @@ export default function CategoryItemsPage() {
                     >
                       {item.stock}
                     </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => handleDeleteItem(item)}
+                      disabled={deletingId === item.id}
+                      title="Hapus barang"
+                      className="text-gray-300 hover:text-red-500 disabled:opacity-40"
+                    >
+                      <Trash2 size={15} />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -174,24 +195,6 @@ export default function CategoryItemsPage() {
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   placeholder="Otomatis jika dikosongkan"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Satuan</label>
-                <select
-                  value={newUnit}
-                  onChange={(e) => setNewUnit(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                >
-                  <option value="pcs">pcs</option>
-                  <option value="box">box</option>
-                  <option value="pack">pack</option>
-                  <option value="rim">rim</option>
-                  <option value="roll">roll</option>
-                  <option value="lusin">lusin</option>
-                  <option value="unit">unit</option>
-                  <option value="botol">botol</option>
-                  <option value="set">set</option>
-                </select>
               </div>
               <button
                 type="submit"

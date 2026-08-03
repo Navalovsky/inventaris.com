@@ -15,7 +15,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 
   const body = await req.json();
-  const { qty, destination } = body;
+  const { qty, unit, plant, departemen } = body;
   const newQty = qty != null ? Number(qty) : existing.qty;
 
   try {
@@ -36,7 +36,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         where: { id: params.id },
         data: {
           ...(qty != null ? { qty: newQty } : {}),
-          ...(destination ? { destination } : {}),
+          ...(unit ? { unit } : {}),
+          ...(plant ? { plant } : {}),
+          ...(departemen ? { departemen } : {}),
         },
         include: { item: true },
       });

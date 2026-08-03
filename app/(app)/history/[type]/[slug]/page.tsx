@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 type StockIn = {
   id: string;
   qty: number;
+  unit: string;
   totalPrice: number;
   status: string;
   createdAt: string;
@@ -18,7 +19,9 @@ type StockIn = {
 type StockOut = {
   id: string;
   qty: number;
-  destination: string;
+  unit: string;
+  plant: string;
+  departemen: string;
   createdAt: string;
   item: { name: string; category: { name: string } };
   user: { name: string };
@@ -83,13 +86,17 @@ export default function HistoryDetailPage() {
                 <th className="px-4 py-3 font-medium">Jam</th>
                 <th className="px-4 py-3 font-medium">Barang</th>
                 <th className="px-4 py-3 font-medium">Qty</th>
+                <th className="px-4 py-3 font-medium">Satuan</th>
                 {isIn ? (
                   <>
                     <th className="px-4 py-3 font-medium">Total Harga</th>
                     <th className="px-4 py-3 font-medium">Status</th>
                   </>
                 ) : (
-                  <th className="px-4 py-3 font-medium">Tujuan</th>
+                  <>
+                    <th className="px-4 py-3 font-medium">Plant</th>
+                    <th className="px-4 py-3 font-medium">Departemen</th>
+                  </>
                 )}
                 <th className="px-4 py-3 font-medium">Oleh</th>
               </tr>
@@ -103,6 +110,9 @@ export default function HistoryDetailPage() {
                     <td className="px-4 py-3 text-gray-500">{time}</td>
                     <td className="px-4 py-3 text-gray-900">{row.item.name}</td>
                     <td className="px-4 py-3">{row.qty}</td>
+                    <td className="px-4 py-3 text-gray-500">
+                      {isIn ? (row as StockIn).unit : (row as StockOut).unit}
+                    </td>
                     {isIn ? (
                       <>
                         <td className="px-4 py-3">
@@ -119,7 +129,10 @@ export default function HistoryDetailPage() {
                         </td>
                       </>
                     ) : (
-                      <td className="px-4 py-3">{(row as StockOut).destination}</td>
+                      <td className="px-4 py-3">{(row as StockOut).plant}</td>
+                    )}
+                    {!isIn && (
+                      <td className="px-4 py-3">{(row as StockOut).departemen}</td>
                     )}
                     <td className="px-4 py-3 text-gray-500">{row.user.name}</td>
                   </tr>

@@ -32,9 +32,9 @@ export async function POST(req: Request) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { itemId, qty, totalPrice } = body;
+  const { itemId, qty, unit, totalPrice } = body;
 
-  if (!itemId || !qty || qty <= 0 || totalPrice == null || totalPrice < 0) {
+  if (!itemId || !qty || qty <= 0 || !unit || totalPrice == null || totalPrice < 0) {
     return NextResponse.json({ error: "Data tidak lengkap atau tidak valid" }, { status: 400 });
   }
 
@@ -42,6 +42,7 @@ export async function POST(req: Request) {
     data: {
       itemId,
       qty: Number(qty),
+      unit,
       totalPrice: Number(totalPrice),
       userId: session.user.id,
       status: "PENDING",

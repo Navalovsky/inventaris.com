@@ -9,6 +9,7 @@ type Item = { id: string; name: string; code: string; unit: string };
 type StockIn = {
   id: string;
   qty: number;
+  unit: string;
   totalPrice: number;
   status: "PENDING" | "VERIFIED" | "REJECTED";
   createdAt: string;
@@ -26,12 +27,20 @@ const statusLabel: Record<string, string> = {
   REJECTED: "Ditolak",
 };
 
+const unitOptions = [
+  "pcs", "box", "pack", "rim", "roll", "lusin", "unit", "botol", "set",
+  "lembar", "buah", "pasang", "karton", "kg", "gram", "liter", "meter",
+  "galon", "sak", "tube", "kaleng",
+];
+
 export default function InputPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [categoryId, setCategoryId] = useState("");
   const [itemId, setItemId] = useState("");
   const [qty, setQty] = useState("");
+  const [unit, setUnit] = useState("pcs");
+  const [customUnit, setCustomUnit] = useState("");
   const [totalPrice, setTotalPrice] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
@@ -39,6 +48,7 @@ export default function InputPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editQty, setEditQty] = useState("");
   const [editPrice, setEditPrice] = useState("");
+  const [editUnit, setEditUnit] = useState("");
 
   useEffect(() => {
     fetch("/api/categories")
@@ -59,6 +69,14 @@ export default function InputPage() {
       .then(setItems);
   }, [categoryId, categories]);
 
+  // Saat barang dipilih, otomatis isi satuan sesuai default barang,
+  // tapi tetap bisa diganti manual oleh user.
+  useEffect(() => {
+    if (!itemId) return;
+    const selected = items.find((i) => i.id === itemId);
+    if (selected) setUnit(selected.unit);
+  }, [itemId, items]);
+
   const loadHistory = useCallback(async () => {
     const res = await fetch("/api/stock-in");
     const data = await res.json();
@@ -68,18 +86,26 @@ export default function InputPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setMessage("");
-    if (!itemId || !qty || !totalPrice) return;
+    const finalUnit = unit === "__custom__" ? customUnit.trim() : unit;
+    if (!itemId || !qty || !finalUnit || !totalPrice) return;
     setSubmitting(true);
     const res = await fetch("/api/stock-in", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ itemId, qty: Number(qty), totalPrice: Number(totalPrice) }),
+      body: JSON.stringify({
+        itemId,
+        qty: Number(qty),
+        unit: finalUnit,
+        totalPrice: Number(totalPrice),
+      }),
     });
     setSubmitting(false);
     if (res.ok) {
       setMessage("Input barang berhasil dikirim, menunggu verifikasi admin.");
       setItemId("");
       setQty("");
+      setUnit("pcs");
+      setCustomUnit("");
       setTotalPrice("");
       setCategoryId("");
       loadHistory();
@@ -93,13 +119,14 @@ export default function InputPage() {
     setEditingId(row.id);
     setEditQty(String(row.qty));
     setEditPrice(String(row.totalPrice));
+    setEditUnit(row.unit);
   }
 
   async function saveEdit(id: string) {
     const res = await fetch(`/api/stock-in/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ qty: Number(editQty), totalPrice: Number(editPrice) }),
+      body: JSON.stringify({ qty: Number(editQty), unit: editUnit, totalPrice: Number(editPrice) }),
     });
     if (res.ok) {
       setEditingId(null);
@@ -153,25 +180,49 @@ export default function InputPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Total Barang
-              {itemId && (
-                <span className="text-gray-400 font-normal">
-                  {" "}
-                  ({items.find((i) => i.id === itemId)?.unit || "pcs"})
-                </span>
-              )}
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Total Barang</label>
             <input
               required
               type="number"
               min={1}
               value={qty}
               onChange={(e) => setQty(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              disabled={!itemId}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:bg-gray-50"
               placeholder="cth: 50"
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Satuan</label>
+            <select
+              required
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+              disabled={!itemId}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:bg-gray-50"
+            >
+              {unitOptions.map((u) => (
+                <option key={u} value={u}>
+                  {u}
+                </option>
+              ))}
+              <option value="__custom__">Lainnya (tulis sendiri)</option>
+            </select>
+          </div>
+          {unit === "__custom__" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Satuan Kustom
+              </label>
+              <input
+                required
+                value={customUnit}
+                onChange={(e) => setCustomUnit(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                placeholder="cth: gulungan, drum, kodi"
+              />
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Total Harga (Rp)</label>
             <input
@@ -217,14 +268,27 @@ export default function InputPage() {
                 <td className="px-4 py-3 text-gray-900">{row.item.name}</td>
                 <td className="px-4 py-3">
                   {editingId === row.id ? (
-                    <input
-                      type="number"
-                      value={editQty}
-                      onChange={(e) => setEditQty(e.target.value)}
-                      className="w-20 rounded border border-gray-300 px-2 py-1 text-sm"
-                    />
+                    <div className="flex gap-1">
+                      <input
+                        type="number"
+                        value={editQty}
+                        onChange={(e) => setEditQty(e.target.value)}
+                        className="w-16 rounded border border-gray-300 px-2 py-1 text-sm"
+                      />
+                      <select
+                        value={editUnit}
+                        onChange={(e) => setEditUnit(e.target.value)}
+                        className="rounded border border-gray-300 px-1 py-1 text-sm"
+                      >
+                        {unitOptions.map((u) => (
+                          <option key={u} value={u}>
+                            {u}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   ) : (
-                    `${row.qty} ${row.item.unit || ""}`
+                    `${row.qty} ${row.unit}`
                   )}
                 </td>
                 <td className="px-4 py-3">

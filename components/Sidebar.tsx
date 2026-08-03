@@ -10,12 +10,14 @@ import {
   History,
   ShieldCheck,
   LogOut,
+  ScanBarcode,
 } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/input", label: "Input Barang", icon: ArrowDownToLine },
   { href: "/output", label: "Output Barang", icon: ArrowUpFromLine },
+  { href: "/scan", label: "Scan Barcode", icon: ScanBarcode },
   { href: "/history", label: "History", icon: History },
 ];
 
